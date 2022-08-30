@@ -11,11 +11,12 @@ namespace WebScraper.Api.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly IProdutoRepo _repo;
-        private readonly ColetorRunner coletor = new ColetorRunner();
+        private readonly ColetorRunner coletor;
 
-        public ProdutosController(IProdutoRepo repo)
+        public ProdutosController(IProdutoRepo repo, IPesquisaFacade pesquisaFacade)
         {
             _repo = repo;
+            coletor = new ColetorRunner(pesquisaFacade);
         }
 
         [HttpGet("DB/CollectAndStore/{produtoNome}")]

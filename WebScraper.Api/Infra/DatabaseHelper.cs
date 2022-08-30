@@ -36,14 +36,14 @@ namespace WebScraper.Api.Infra
 
         public void InsertPesquisa(Pesquisa pesquisa)
         {
-            if (pesquisa is null)
-            {
-                pesquisasRepo.CreatePesquisa(pesquisa);
-            }
-            else
-            {
-                pesquisa.DataPesquisa = System.DateTime.Now;
-            }
+            pesquisasRepo.CreatePesquisa(pesquisa);
+
+            pesquisasRepo.SaveChanges();
+        }
+
+        public void UpdatePesquisa(Pesquisa pesquisa)
+        {
+            pesquisa.DataPesquisa = System.DateTime.Now;
 
             pesquisasRepo.SaveChanges();
         }

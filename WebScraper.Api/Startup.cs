@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using WebScraper.Api.Application;
+using WebScraper.Api.Application.Facade;
 using WebScraper.Api.Domain.Contracts;
 using WebScraper.Api.Infra.Data;
 
@@ -16,9 +17,6 @@ namespace WebScraper.Api
 {
     public class Startup
     {
-
-        IProdutoRepo repo;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -35,6 +33,7 @@ namespace WebScraper.Api
 
             services.AddScoped<IProdutoRepo, SqlProdutosRepo>();
             services.AddScoped<IPesquisaRepo, SqlPesquisasRepo>();
+            services.AddSingleton<IPesquisaFacade, PesquisaFacade>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,9 +54,6 @@ namespace WebScraper.Api
             {
                 endpoints.MapControllers();
             });
-
-            //var a = new ColetorRunner();
-            //a.RunColetor();
         }
     }
 }

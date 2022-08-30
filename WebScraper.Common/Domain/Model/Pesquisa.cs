@@ -25,6 +25,10 @@ namespace WebScraper.Common.Domain.Model
 
         public DateTime DataCadastro { get; set; }
 
+        //public double MenorValor { get; set; }
+
+        //public double Media { get; set; }
+
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);

@@ -3,6 +3,7 @@ using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using WebScraper.Coletor.Extensions;
 using WebScraper.Common.Model;
 
 namespace WebScraper.Application
@@ -50,7 +51,7 @@ namespace WebScraper.Application
                 try
                 {
                     //com promo
-                    produto.Preco = divProduto.FindElement(By.XPath("a/div[3]/div/div[2]/span/b")).Text;
+                    produto.Preco = divProduto.FindElement(By.XPath("a/div[3]/div/div[2]/span/b")).Text.ToDecimalBRFormat();
                     produto.Texto = divProduto.FindElement(By.XPath("a/div[3]/div/div[1]")).Text;
                     produto.Site = divProduto.FindElement(By.XPath("a/div[3]/div/div[3]/span")).Text;
                     produto.Link = divProduto.FindElement(By.XPath("a")).GetAttribute("href");
@@ -58,7 +59,7 @@ namespace WebScraper.Application
                 catch (NoSuchElementException)
                 {
                     //sem promo
-                    produto.Preco = divProduto.FindElement(By.XPath("a/div[2]/div/div[2]/span/b")).Text;
+                    produto.Preco = divProduto.FindElement(By.XPath("a/div[2]/div/div[2]/span/b")).Text.ToDecimalBRFormat();
                     produto.Texto = divProduto.FindElement(By.XPath("a/div[2]/div/div[1]")).Text;
                     produto.Site = divProduto.FindElement(By.XPath("a/div[2]/div/div[3]/span")).Text;
                     produto.Link = divProduto.FindElement(By.XPath("a")).GetAttribute("href");

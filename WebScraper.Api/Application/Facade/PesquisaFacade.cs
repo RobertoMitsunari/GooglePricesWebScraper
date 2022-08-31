@@ -33,7 +33,14 @@ namespace WebScraper.Api.Application.Facade
 
         public void InsertOrUpdatePesquisa(Pesquisa pesquisa, string produto)
         {
-            _pesquisasDictionary.Add(produto, pesquisa);
+            if (_pesquisasDictionary.ContainsKey(produto))
+            {
+                _pesquisasDictionary[produto] = pesquisa;
+            }
+            else
+            {
+                _pesquisasDictionary.Add(produto, pesquisa);
+            }
         }
 
         public void LoadPesquisasDictionary(List<Pesquisa> pesquisas)

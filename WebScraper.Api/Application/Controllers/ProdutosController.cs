@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using WebScraper.Api.Application;
 using WebScraper.Api.Domain.Contracts;
 using WebScraper.Common.Model;
 
@@ -11,15 +10,15 @@ namespace WebScraper.Api.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly IProdutoRepo _repo;
-        private readonly ColetorRunner coletor;
+        private readonly IColetorRunner coletor;
 
-        public ProdutosController(IProdutoRepo repo, IPesquisaFacade pesquisaFacade)
+        public ProdutosController(IProdutoRepo repo, IColetorRunner coletorRunner)
         {
             _repo = repo;
-            coletor = new ColetorRunner(pesquisaFacade);
+            coletor = coletorRunner;
         }
 
-        [HttpGet("DB/CollectAndStore/{produtoNome}")]
+        [HttpGet("CollectAndStore/{produtoNome}")]
         public ActionResult<IEnumerable<Produto>> GetAllProdutosAndStore(string produtoNome)
         {
             coletor.CollectAndStore(produtoNome);

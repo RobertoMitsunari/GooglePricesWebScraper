@@ -32,6 +32,12 @@ namespace WebScraper.Api.Migrations
                     b.Property<DateTime>("DataPesquisa")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("Media")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MenorValor")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -56,8 +62,8 @@ namespace WebScraper.Api.Migrations
                     b.Property<string>("Nome")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Preco")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("Preco")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Site")
                         .HasColumnType("nvarchar(max)");

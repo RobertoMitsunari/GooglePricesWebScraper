@@ -7,24 +7,24 @@ using WebScraper.Common.Domain.Model;
 using WebScraper.Common.Model;
 using System.Linq;
 using WebScraper.Api.Domain.Contracts;
+using WebScraper.Api.Application.Facade;
 
 namespace WebScraper.Api.Application
 {
-    public class ColetorRunner
+    public class ColetorRunner : IColetorRunner
     {
         private List<Pesquisa> pesquisas;
-        //private Dictionary<string, Pesquisa> pesquisasDictionary;
         private readonly ScrapEngine engine;
         private readonly Cleaner cleaner;
         private readonly DatabaseHelper DatabaseHelper;
         private readonly IPesquisaFacade _pesquisaFacade;
 
-        public ColetorRunner(IPesquisaFacade pesquisaFacade)
+        public ColetorRunner()
         {
             engine = new ScrapEngine();
             cleaner = new Cleaner();
             DatabaseHelper = new DatabaseHelper();
-            _pesquisaFacade = pesquisaFacade;
+            _pesquisaFacade = new PesquisaFacade();
             LoadPesquisas();
         }
 
@@ -40,24 +40,28 @@ namespace WebScraper.Api.Application
                 DatabaseHelper.ClearOldSearch(produtoNome);
             }
 
-            DatabaseHelper.InsertProdutos(CollectProducts(produtoNome));
+            List<Produto> produtos = CollectProducts(produtoNome);
 
-            UpdateOrInsertPesquisa(pesquisa, produtoNome);
+            DatabaseHelper.InsertProdutos(produtos);
+
+            UpdateOrInsertPesquisa(pesquisa, produtos, produtoNome);
         }
 
-        public void UpdateOrInsertPesquisa(Pesquisa pesquisa, string produto)
+        public void UpdateOrInsertPesquisa(Pesquisa pesquisa, List<Produto> produtos, string produtoNome)
         {
             if (pesquisa is null)
             {
-                pesquisa = new Pesquisa(produto);
+                pesquisa = new Pesquisa(produtoNome);
+                pesquisa.CalculaValores(produtos);
                 DatabaseHelper.InsertPesquisa(pesquisa);
             }
             else
             {
+                pesquisa.CalculaValores(produtos);
                 DatabaseHelper.UpdatePesquisa(pesquisa);
             }
 
-            _pesquisaFacade.InsertOrUpdatePesquisa(pesquisa, produto);
+            _pesquisaFacade.InsertOrUpdatePesquisa(pesquisa, produtoNome);
         }
 
         public List<Produto> CollectProducts(string produtoNome)
@@ -67,35 +71,7 @@ namespace WebScraper.Api.Application
             return cleaner.ClearData(engine.Coletar(url), produtoNome);
         }
 
-        //public bool VerifyIfSearchIsNeccesary(string produtoNome, out Pesquisa pesquisa)
-        //{
-        //    if (pesquisasDictionary.TryGetValue(produtoNome, out Pesquisa oldPesquisa))
-        //    {
-        //        pesquisa = oldPesquisa;
-
-        //        if (oldPesquisa.DataPesquisa.AddMinutes(10.0) < System.DateTime.Now)
-        //        {
-        //            DatabaseHelper.ClearOldSearch(produtoNome);
-
-        //            return true;
-        //        }
-
-        //        return false;
-        //    }
-
-        //    pesquisa = null;
-        //    return true;
-        //}
-
-        //private Dictionary<string, Pesquisa> InitializePesquisasDictionary(List<Pesquisa> pesquisas)
-        //{
-        //    var dictionary = new Dictionary<string, Pesquisa>();
-
-        //    pesquisas.ForEach(s => dictionary.Add(s.Name, s));
-
-        //    return dictionary;
-        //}
-
+        //TODO Passar para o FACADE
         private void LoadPesquisas()
         {
             pesquisas = DatabaseHelper.GetPesquisas().ToList();

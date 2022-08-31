@@ -8,7 +8,7 @@ namespace WebScraper.Common.Model
         public int Id { get; set; }
         public string Nome { get; set; }
         public string Texto { get; set; }
-        public string Preco { get; set; }
+        public decimal Preco { get; set; }
         public string Site { get; set; }
         public string Link { get; set; }
         public DateTime DataPesquisa { get; set; }

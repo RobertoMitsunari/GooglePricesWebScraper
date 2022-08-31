@@ -33,7 +33,7 @@ namespace WebScraper.Api
 
             services.AddScoped<IProdutoRepo, SqlProdutosRepo>();
             services.AddScoped<IPesquisaRepo, SqlPesquisasRepo>();
-            services.AddSingleton<IPesquisaFacade, PesquisaFacade>();
+            services.AddSingleton<IColetorRunner, ColetorRunner>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

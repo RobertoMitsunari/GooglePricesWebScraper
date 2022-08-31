@@ -40,6 +40,11 @@ namespace WebScraper.Api.Infra.Data
             return _context.Pesquisas.FirstOrDefault(c => c.Id == id);
         }
 
+        public Pesquisa GetPesquisaByName(string nome)
+        {
+            return _context.Pesquisas.FirstOrDefault(c => c.Name == nome);
+        }
+
         public IEnumerable<Pesquisa> GetPesquisas()
         {
             return _context.Pesquisas.ToList();

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using WebScraper.Api.Application;
 using WebScraper.Api.Domain.Contracts;
+using WebScraper.Api.Domain.Model;
 using WebScraper.Common.Model;
 
 namespace WebScraper.Api.Controllers
@@ -9,12 +11,15 @@ namespace WebScraper.Api.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private readonly IProdutoRepo _repo;
+        private readonly IProdutoRepo _produtosRepo;
+        private readonly IPesquisaRepo _pesquisaRepo;
         private readonly IColetorRunner coletor;
+        private readonly PromotionsDealer _promotionsDealer = new PromotionsDealer();
 
-        public ProdutosController(IProdutoRepo repo, IColetorRunner coletorRunner)
+        public ProdutosController(IProdutoRepo produtoRepo, IPesquisaRepo pesquisaRepo, IColetorRunner coletorRunner)
         {
-            _repo = repo;
+            _produtosRepo = produtoRepo;
+            _pesquisaRepo = pesquisaRepo;
             coletor = coletorRunner;
         }
 
@@ -23,7 +28,7 @@ namespace WebScraper.Api.Controllers
         {
             coletor.CollectAndStore(produtoNome);
 
-            var produtos = _repo.GetProdutosByName(produtoNome);
+            var produtos = _produtosRepo.GetProdutosByName(produtoNome);
 
             return Ok(produtos);
         }
@@ -32,7 +37,7 @@ namespace WebScraper.Api.Controllers
         public ActionResult<IEnumerable<Produto>> GetAllProdutosFromDB(string produtoNome)
         {
 
-            var produtos = _repo.GetProdutosByName(produtoNome);
+            var produtos = _produtosRepo.GetProdutosByName(produtoNome);
 
             return Ok(produtos);
         }
@@ -43,6 +48,15 @@ namespace WebScraper.Api.Controllers
             var produtos = coletor.CollectProducts(produtoNome);
 
             return Ok(produtos);
+        }
+
+        [HttpGet("Promocao/{produtoNome}")]
+        public ActionResult<IEnumerable<Promotion>> GetPromocoes(string produtoNome)
+        {
+            var produtos = _produtosRepo.GetProdutosByName(produtoNome);
+            var pesquisa = _pesquisaRepo.GetPesquisaByName(produtoNome);
+
+            return Ok(_promotionsDealer.GetPromotion(produtos, pesquisa));
         }
     }
 }

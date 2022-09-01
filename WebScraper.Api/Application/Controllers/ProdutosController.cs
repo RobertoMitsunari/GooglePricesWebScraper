@@ -15,13 +15,14 @@ namespace WebScraper.Api.Controllers
     {
         private readonly IColetorRunner _coletor;
         private readonly PromotionsDealer _promotionsDealer = new PromotionsDealer();
-
         private readonly DatabaseHelper _databaseHelper;
+        private readonly IPesquisaFacade _pesquisaFacade;
 
-        public ProdutosController(IColetorRunner coletor, IServiceScopeFactory scopeFactory)
+        public ProdutosController(IColetorRunner coletor, IServiceScopeFactory scopeFactory, IPesquisaFacade pesquisaFacade)
         {
             _coletor = coletor;
             _databaseHelper = new DatabaseHelper(scopeFactory);
+            _pesquisaFacade = pesquisaFacade;
         }
 
         [HttpGet("CollectAndStore/{produtoNome}")]
@@ -37,7 +38,6 @@ namespace WebScraper.Api.Controllers
         [HttpGet("DB/{produtoNome}")]
         public ActionResult<IEnumerable<Produto>> GetAllProdutosFromDB(string produtoNome)
         {
-
             var produtos = _databaseHelper.GetProdutosByName(produtoNome);
 
             return Ok(produtos);
@@ -51,21 +51,43 @@ namespace WebScraper.Api.Controllers
             return Ok(produtos);
         }
 
-        [HttpGet("Promocao/{produtoNome}")]
+        [HttpGet("promocao/{produtoNome}")]
         public ActionResult<IEnumerable<Promotion>> GetPromocoes(string produtoNome)
         {
-            var produtos = _databaseHelper.GetProdutosByName(produtoNome);
             var pesquisa = _databaseHelper.GetPesquisaByName(produtoNome);
 
+            if(pesquisa is null)
+            {
+                return NotFound();
+            }
+
+            var produtos = _databaseHelper.GetProdutosByName(produtoNome);
+
             return Ok(_promotionsDealer.GetPromotion(produtos, pesquisa));
+        }
+
+        [HttpGet("pesquisa/{produtoNome}")]
+        public ActionResult<IEnumerable<Promotion>> SetPesquisa(string produtoNome)
+        {
+            var pesquisa = _databaseHelper.GetPesquisaByName(produtoNome);
+
+            if (!(pesquisa is null))
+            {
+                return NotFound();
+            }
+
+            _coletor.UpdateOrInsertPesquisa(pesquisa, produtoNome);
+
+            return Ok(pesquisa);
         }
 
         /*
          * TODOS:
          * PROBLEMA DE CONCORRENCIA (feito?)
         Cadastrar pesquisas sem ter q coletar
+        Melhorar coletor para adicionar uma nova coletagem para pegar produtos fora da área de anúncios
         Melhorar níveis de promoção para calcular a porcentagem que o produto esta abaixo da media
-        Melhorar filtro do coletor
+        Melhorar filtro do coletor 
         Add endpoint que pega a melhor promo
         Add endpoint que pega a melhores promos (talvez n precise)
         */

@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using WebScraper.Common.Model;
 
 namespace WebScraper.Common.Domain.Model
@@ -13,7 +12,6 @@ namespace WebScraper.Common.Domain.Model
         public Pesquisa(string name)
         {
             Name = name;
-            DataPesquisa = DateTime.Now;
             DataCadastro = DateTime.Now;
         }
 
@@ -32,6 +30,7 @@ namespace WebScraper.Common.Domain.Model
         public void CalculaValores(IEnumerable<Produto> produtos)
         {
             GetPrices(this, produtos.GetEnumerator(), 0, MenorValor, 0);
+            DataPesquisa = DateTime.Now;
         }
 
         private Pesquisa GetPrices(Pesquisa pesquisa, IEnumerator<Produto> produtos, decimal media, decimal min, int interator)

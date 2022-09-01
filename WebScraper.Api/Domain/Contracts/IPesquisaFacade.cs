@@ -7,7 +7,7 @@ namespace WebScraper.Api.Domain.Contracts
     {
         public bool VerifyIfSearchIsNeccesary(string produtoNome, out Pesquisa pesquisa);
 
-        public void LoadPesquisasDictionary(List<Pesquisa> pesquisas);
+        public void LoadPesquisasDictionary(IEnumerable<Pesquisa> pesquisas);
 
         public void InsertOrUpdatePesquisa(Pesquisa pesquisa, string produto);
 

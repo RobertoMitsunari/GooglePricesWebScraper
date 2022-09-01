@@ -1,16 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Linq;
 using WebScraper.Api.Domain.Contracts;
+using WebScraper.Api.Infra.Data;
 using WebScraper.Common.Domain.Model;
 
 namespace WebScraper.Api.Application.Facade
 {
     public class PesquisaFacade : IPesquisaFacade
     {
-        public static Dictionary<string, Pesquisa> _pesquisasDictionary;
+        public static Dictionary<string, Pesquisa> _pesquisasDictionary = new Dictionary<string, Pesquisa>();
+        private readonly IPesquisaRepo pesquisasRepo;
 
-        public PesquisaFacade()
+        public PesquisaFacade(IServiceScopeFactory scopeFactory)
         {
-            _pesquisasDictionary = new Dictionary<string, Pesquisa>();
+            var scope = scopeFactory.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ProdutoContext>();
+
+            pesquisasRepo = new SqlPesquisasRepo(context);
+
+            LoadPesquisasDictionary(pesquisasRepo.GetPesquisas());
         }
 
         public bool VerifyIfSearchIsNeccesary(string produtoNome, out Pesquisa pesquisa)
@@ -19,14 +28,12 @@ namespace WebScraper.Api.Application.Facade
             {
                 pesquisa = oldPesquisa;
 
-                //if (oldPesquisa.DataPesquisa.AddMinutes(10.0) < System.DateTime.Now)
-                //{
-                //    return true;
-                //}
+                if (oldPesquisa.DataPesquisa.AddMinutes(1.0) < System.DateTime.Now)
+                {
+                    return true;
+                }
 
-                //return false;
-
-                return true;
+                return false;
             }
 
             pesquisa = null;
@@ -45,9 +52,9 @@ namespace WebScraper.Api.Application.Facade
             }
         }
 
-        public void LoadPesquisasDictionary(List<Pesquisa> pesquisas)
+        public void LoadPesquisasDictionary(IEnumerable<Pesquisa> pesquisas)
         {
-            pesquisas.ForEach(s => _pesquisasDictionary.Add(s.Name, s));
+            pesquisas.ToList().ForEach(s => _pesquisasDictionary.Add(s.Name, s));
         }
 
         public List<string> GetPesquisas()

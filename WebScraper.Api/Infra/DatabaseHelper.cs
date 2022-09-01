@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using WebScraper.Api.Domain.Contracts;
@@ -15,12 +16,15 @@ namespace WebScraper.Api.Infra
         private readonly IPesquisaRepo pesquisasRepo;
         private readonly IProdutoRepo produtosRepo;
 
-        public DatabaseHelper(/*IProdutoRepo produtoRepo, IPesquisaRepo pesquisaRepo*/)
+        public DatabaseHelper(/*IProdutoRepo produtoRepo, IPesquisaRepo pesquisaRepo*/IServiceScopeFactory scopeFactory)
         {
-            optionsBuilder = new DbContextOptionsBuilder<ProdutoContext>();
-            optionsBuilder.UseSqlServer("Server=localhost,1433;Initial Catalog=ProdutosDB;User ID=sa;Password=Roberto@123;");
+            //optionsBuilder = new DbContextOptionsBuilder<ProdutoContext>();
+            //optionsBuilder.UseSqlServer("Server=localhost,1433;Initial Catalog=ProdutosDB;User ID=sa;Password=Roberto@123;");
 
-            context = new ProdutoContext(optionsBuilder.Options);
+            var scope = scopeFactory.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ProdutoContext>();
+
+            //context = new ProdutoContext(optionsBuilder.Options);
             pesquisasRepo = new SqlPesquisasRepo(context);
             produtosRepo = new SqlProdutosRepo(context);
 
@@ -66,5 +70,16 @@ namespace WebScraper.Api.Infra
         {
             return pesquisasRepo.GetPesquisas();
         }
+
+        public Pesquisa GetPesquisaByName(string nome)
+        {
+            return pesquisasRepo.GetPesquisaByName(nome);
+        }
+
+        public IEnumerable<Produto> GetProdutosByName(string nome)
+        {
+            return produtosRepo.GetProdutosByName(nome);
+        }
+
     }
 }

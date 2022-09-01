@@ -3,6 +3,7 @@ using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using WebScraper.Coletor.Application;
 using WebScraper.Coletor.Extensions;
 using WebScraper.Common.Model;
 
@@ -11,6 +12,7 @@ namespace WebScraper.Application
     public class ScrapEngine
     {
         private IWebDriver _driver;
+        private readonly Cleaner cleaner = new Cleaner();
 
         private void Open(string url)
         {
@@ -28,8 +30,10 @@ namespace WebScraper.Application
             _driver.Close();
         }
 
-        public List<Produto> Coletar(string url)
+        public List<Produto> Coletar(string nomeProduto)
         {
+            var url = $"https://www.google.com.br/search?q=%22{nomeProduto.Replace(" ", "+").Replace("_", "+")}%22&hl=pt-BR&tbm=shop";
+
             var produtos = new List<Produto>();
 
             Open(url);
@@ -76,7 +80,7 @@ namespace WebScraper.Application
 
             Close();
 
-            return produtos;
+            return cleaner.ClearData(produtos, nomeProduto);
         }
 
     }

@@ -9,6 +9,7 @@ using System.Linq;
 using WebScraper.Api.Domain.Contracts;
 using WebScraper.Api.Application.Facade;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace WebScraper.Api.Application
 {
@@ -17,18 +18,17 @@ namespace WebScraper.Api.Application
         private List<Pesquisa> pesquisas;
         private bool runThread;
         private readonly ScrapEngine engine;
-        private readonly Cleaner cleaner;
         private readonly DatabaseHelper DatabaseHelper;
         private readonly IPesquisaFacade _pesquisaFacade;
         private readonly Semaphore _semaphore;
 
-        public ColetorRunner(IProdutoRepo produtoRepo, IPesquisaRepo pesquisaRepo)
+        public ColetorRunner(IServiceScopeFactory scopeFactory)
         {
             engine = new ScrapEngine();
-            cleaner = new Cleaner();
-            DatabaseHelper = new DatabaseHelper(/*produtoRepo, pesquisaRepo*/);
+            DatabaseHelper = new DatabaseHelper(scopeFactory);
             _pesquisaFacade = new PesquisaFacade();
             _semaphore = new Semaphore(initialCount: 1, maximumCount: 1);
+
             LoadPesquisas();
             Start();
         }
@@ -105,9 +105,7 @@ namespace WebScraper.Api.Application
 
         public List<Produto> CollectProducts(string produtoNome)
         {
-            var url = $"https://www.google.com.br/search?q=%22{produtoNome.Replace(" ", "+").Replace("_", "+")}%22&hl=pt-BR&tbm=shop";
-
-            return cleaner.ClearData(engine.Coletar(url), produtoNome);
+            return engine.Coletar(produtoNome);
         }
 
         //TODO Passar para o FACADE

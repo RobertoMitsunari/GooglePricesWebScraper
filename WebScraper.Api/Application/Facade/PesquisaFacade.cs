@@ -6,7 +6,7 @@ namespace WebScraper.Api.Application.Facade
 {
     public class PesquisaFacade : IPesquisaFacade
     {
-        private static Dictionary<string, Pesquisa> _pesquisasDictionary;
+        public static Dictionary<string, Pesquisa> _pesquisasDictionary;
 
         public PesquisaFacade()
         {
@@ -19,12 +19,14 @@ namespace WebScraper.Api.Application.Facade
             {
                 pesquisa = oldPesquisa;
 
-                if (oldPesquisa.DataPesquisa.AddMinutes(10.0) < System.DateTime.Now)
-                {
-                    return true;
-                }
+                //if (oldPesquisa.DataPesquisa.AddMinutes(10.0) < System.DateTime.Now)
+                //{
+                //    return true;
+                //}
 
-                return false;
+                //return false;
+
+                return true;
             }
 
             pesquisa = null;
@@ -46,6 +48,19 @@ namespace WebScraper.Api.Application.Facade
         public void LoadPesquisasDictionary(List<Pesquisa> pesquisas)
         {
             pesquisas.ForEach(s => _pesquisasDictionary.Add(s.Name, s));
+        }
+
+        public List<string> GetPesquisas()
+        {
+            var pesquisas = new List<string>();
+            var keys = _pesquisasDictionary.Keys;
+
+            foreach(string key in keys)
+            {
+                pesquisas.Add(key);
+            }
+
+            return pesquisas;
         }
     }
 }

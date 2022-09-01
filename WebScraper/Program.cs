@@ -13,7 +13,7 @@ namespace WebScraper
             Console.WriteLine("Digite o produto");
             var pesquisa = Console.ReadLine().Replace(" ","+");
 
-            var url = $"https://www.google.com.br/search?q=%22{pesquisa}%22&hl=pt-BR&tbm=shop";
+            var url = $"https://www.google.com.br/search?q={pesquisa}&hl=pt-BR&tbm=shop";
 
             var scrapEngine = new ScrapEngine();
 

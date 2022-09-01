@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using WebScraper.Api.Domain.Contracts;
 using WebScraper.Api.Infra.Data;
 using WebScraper.Common.Domain.Model;
 using WebScraper.Common.Model;
@@ -11,10 +12,10 @@ namespace WebScraper.Api.Infra
     {
         private readonly DbContextOptionsBuilder<ProdutoContext> optionsBuilder;
         private readonly ProdutoContext context;
-        private readonly SqlPesquisasRepo pesquisasRepo;
-        private readonly SqlProdutosRepo produtosRepo;
+        private readonly IPesquisaRepo pesquisasRepo;
+        private readonly IProdutoRepo produtosRepo;
 
-        public DatabaseHelper()
+        public DatabaseHelper(/*IProdutoRepo produtoRepo, IPesquisaRepo pesquisaRepo*/)
         {
             optionsBuilder = new DbContextOptionsBuilder<ProdutoContext>();
             optionsBuilder.UseSqlServer("Server=localhost,1433;Initial Catalog=ProdutosDB;User ID=sa;Password=Roberto@123;");
@@ -22,6 +23,9 @@ namespace WebScraper.Api.Infra
             context = new ProdutoContext(optionsBuilder.Options);
             pesquisasRepo = new SqlPesquisasRepo(context);
             produtosRepo = new SqlProdutosRepo(context);
+
+            //produtosRepo = produtoRepo;
+            //pesquisasRepo = pesquisaRepo;
         }
 
         public void InsertProdutos(IEnumerable<Produto> produtos)

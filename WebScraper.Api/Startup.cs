@@ -29,10 +29,11 @@ namespace WebScraper.Api
         {
             services.AddControllers();
 
-            services.AddDbContext<ProdutoContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("ProdutosConnection")));
+            services.AddDbContext<ProdutoContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ProdutosConnection")), ServiceLifetime.Transient);
 
             services.AddScoped<IProdutoRepo, SqlProdutosRepo>();
             services.AddScoped<IPesquisaRepo, SqlPesquisasRepo>();
+
             services.AddSingleton<IColetorRunner, ColetorRunner>();
         }
 

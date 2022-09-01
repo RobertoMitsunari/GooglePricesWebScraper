@@ -12,21 +12,22 @@ namespace WebScraper.Api.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly IProdutoRepo _produtosRepo;
-        private readonly IPesquisaRepo _pesquisaRepo;
-        private readonly IColetorRunner coletor;
+        private readonly IPesquisaRepo _pesquisaRepo; //Usar o DatabaseHelper aqui tmb (como um singleton?)
+        private readonly IColetorRunner _coletor;
         private readonly PromotionsDealer _promotionsDealer = new PromotionsDealer();
 
-        public ProdutosController(IProdutoRepo produtoRepo, IPesquisaRepo pesquisaRepo, IColetorRunner coletorRunner)
+        public ProdutosController(IProdutoRepo produtoRepo, IPesquisaRepo pesquisaRepo, IColetorRunner coletor)
         {
             _produtosRepo = produtoRepo;
             _pesquisaRepo = pesquisaRepo;
-            coletor = coletorRunner;
+            //coletor = new ColetorRunner(produtoRepo, pesquisaRepo);
+            _coletor = coletor;
         }
 
         [HttpGet("CollectAndStore/{produtoNome}")]
         public ActionResult<IEnumerable<Produto>> GetAllProdutosAndStore(string produtoNome)
         {
-            coletor.CollectAndStore(produtoNome);
+            _coletor.CollectAndStore(produtoNome);
 
             var produtos = _produtosRepo.GetProdutosByName(produtoNome);
 
@@ -45,7 +46,7 @@ namespace WebScraper.Api.Controllers
         [HttpGet("{produtoNome}")]
         public ActionResult<IEnumerable<Produto>> GetProdutos(string produtoNome)
         {
-            var produtos = coletor.CollectProducts(produtoNome);
+            var produtos = _coletor.CollectProducts(produtoNome);
 
             return Ok(produtos);
         }
@@ -58,5 +59,15 @@ namespace WebScraper.Api.Controllers
 
             return Ok(_promotionsDealer.GetPromotion(produtos, pesquisa));
         }
+
+        /*
+         * TODOS:
+         * PROBLEMA DE CONCORRENCIA
+        Cadastrar pesquisas sem ter q coletar
+        Melhorar níveis de promoção para calcular a porcentagem que o produto esta abaixo da media
+        Melhorar filtro do coletor
+        Add endpoint que pega a melhor promo
+        Add endpoint que pega a melhores promos (talvez n precise)
+        */
     }
 }

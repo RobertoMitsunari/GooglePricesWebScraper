@@ -10,5 +10,7 @@ namespace WebScraper.Api.Domain.Contracts
         public void LoadPesquisasDictionary(List<Pesquisa> pesquisas);
 
         public void InsertOrUpdatePesquisa(Pesquisa pesquisa, string produto);
+
+        public List<string> GetPesquisas();
     }
 }

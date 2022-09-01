@@ -9,5 +9,7 @@ namespace WebScraper.Api.Domain.Contracts
         public void CollectAndStore(string produtoNome);
         public void UpdateOrInsertPesquisa(Pesquisa pesquisa,List<Produto> produtos, string produto);
         public List<Produto> CollectProducts(string produtoNome);
+        public void Start();
+        public void Stop();
     }
 }

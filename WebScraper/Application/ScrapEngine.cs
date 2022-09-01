@@ -64,6 +64,11 @@ namespace WebScraper.Application
                     produto.Site = divProduto.FindElement(By.XPath("a/div[2]/div/div[3]/span")).Text;
                     produto.Link = divProduto.FindElement(By.XPath("a")).GetAttribute("href");
                 }
+                catch
+                {
+                    break;
+                }
+
                 produto.DataPesquisa = DateTime.Now;
 
                 produtos.Add(produto);
